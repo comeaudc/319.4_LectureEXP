@@ -3,6 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import Fruits from './models/fruitsSchema.mjs';
+import fruits from './utilities/data.js';
 
 //Configurations
 dotenv.config();
@@ -14,6 +15,14 @@ await mongoose.connect(process.env.MONGO_URI);
 app.use(express.json());
 
 //Routes
+//Seed Routes
+app.get('/seed', async (req, res) => {
+  await Fruits.deleteMany({});
+  await Fruits.create(fruits);
+
+  res.send(`Database Seeded`);
+});
+
 //Create
 app.post('/', async (req, res) => {
   try {
@@ -57,9 +66,9 @@ app.put('/:id', async (req, res) => {
 //Delete
 app.delete('/:id', async (req, res) => {
   try {
-    await Fruits.findByIdAndDelete(req.params.id)
+    await Fruits.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({msg: "Item Deleted"})
+    res.status(200).json({ msg: 'Item Deleted' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server Error' });
